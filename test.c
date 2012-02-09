@@ -1,15 +1,5 @@
 #include "libliveview.h"
 
-void left_button_pressed(struct liveview *lv)
-{
-
-}
-
-void right_button_pressed(struct liveview *lv)
-{
-
-}
-
 void pexit(const char *str)
 {
 	perror(str ? str : "");
@@ -18,27 +8,37 @@ void pexit(const char *str)
 
 int main(int argc, char **argv)
 {
+	struct liveview_event lv_ev;
 	struct liveview lv;
 
-	if (liveview_init(&lv) < 0)
+	if (liveview_init(&lv) == -1)
 		pexit("liveview_init");
 
 	printf("waiting...\n");
-	if (liveview_connect(&lv) < 0)
+
+	if (liveview_connect(&lv) == -1)
 		pexit("liveview_connect");
 
-	/*
-	liveview_set_left_button_cb(&lv, left_button_pressed);
-	liveview_set_right_button_cb(&lv, right_button_pressed)
+	printf("connected!\n");
 
-	for (;;) {
-		if (liveview_connect(&lw, "LiveView") < 0)
-			perror("liveview_connect");
-		else
-			liveview_loop(&lw);
-		sleep(10);
+	while (liveview_read(&lv, &lv_ev) != -1) {
+		printf("loop\n");
+
+		liveview_send_ack(&lv, lv_ev.type);
+		if (lv_ev.type == M_DISPLAY_PROPERTIES_RESPONSE) {
+			printf(":: propresp\n");
+			liveview_send_menu_size(&lv, 1);
+			liveview_send_menu_settings(&lv, 5, 0);
+		} else if (lv_ev.type == M_SETMENUSIZE_ACK) {
+			printf(":: menusizeack\n");
+		} else if (lv_ev.type == M_GETMENUITEMS) {
+			printf(":: getmenu\n");
+			init_menu(&lv);
+/*			liveview_send_menu_item(&lv, 0, "Play", "");*/
+		}
 	}
-	*/
+
+	pexit("read");
 
 	return 0;
 }

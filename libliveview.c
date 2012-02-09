@@ -132,7 +132,7 @@ int liveview_msg_read(struct liveview *lv,
 	char buf[4];
 	char *p;
 
-	if (read(lv->fd, msg->id, 1) < 0)
+	if (read(lv->fd, &msg->id, 1) < 0)
 		return -1;
 	if (read(lv->fd, &msg->header_len, 1) < 0)
 		return -1;
@@ -165,47 +165,61 @@ int liveview_read(struct liveview *lv, struct liveview_event *ev)
 		return -1;
 
 	if (liveview_msg_read(lv, msg) < 0) {
-		printf("msg_Read\n");
 		liveview_msg_free(msg);
 		return -1;
 	}
 
+	printf("id: %i, header: %i, payload: %i\n", msg->id, msg->header_len,
+			msg->payload_len);
+
+	ev->type = msg->id;
+
 	liveview_msg_free(msg);
 
 	return 0;
-#if 0
+}
 
-	char buf[4];
-	char *p;
+int liveview_send_menu_size(struct liveview *lv, unsigned char size)
+{
+	send_msg(lv, M_SETMENUSIZE, 1, size);
+}
 
-	printf("read!!!\n");
-	if (read(lv->fd, &msg.id, 1) < 0)
-		pexit("read id");
-	if (read(lv->fd, &msg.header_len, 1) < 0)
-		pexit("header");
-	if (read(lv->fd, buf, 4) < 0)
-		pexit("payload");
+int liveview_send_menu_settings(struct liveview *lv, uint8_t vtime, uint8_t id)
+{
+	char buf[3];
+	buf[0] = 12;
+	buf[1] = vtime;
+	buf[2] = id;
+	send_msg(lv, M_SETMENUSETTINGS, 3, buf);
+}
 
-	msg.payload_len = buf[0] << 24 | buf[1] << 16 |
-		buf[2] << 8 | buf[3];
+init_menu(struct liveview *lv)
+{
+	char buf[4096];
+	buf[0] = 0;
+	buf[1] = 0;
+	buf[2] = 0;
+	buf[3] = 0;
+	buf[4] = 20;
+	buf[5] = 0;
+	buf[6] = 0;
+	buf[7] = 3;
+	buf[8] = 0;
+	buf[9] = 0;
+	buf[10] = 0;
+	buf[11] = 0;
+	buf[12] = 0;
+	buf[13] = 0;
+	buf[14] = 1;
+	buf[15] = 'A';
 
-	if (!(msg.payload = calloc(msg.payload_len, sizeof(char))))
-		return -1;
-
-	p = msg.payload;
-	while (msg.payload_len > payload_read) {
-		int32_t tmp = read(lv->fd, p, msg.payload_len - payload_read);
-
-		if (tmp < 0)
-			pexit("payload");
-		payload_read += tmp;
-		p += tmp;
-	}
-	printf("id: %i\n", msg.id);
-	printf("header: %i\n", msg.header_len);
-	printf("payload: %u\n", msg.payload_len);
-#endif
+	send_msg(lv, M_GETMENUITEM_RESP, 15, buf);
 
 
-	return 0;
+
+}
+
+int liveview_send_ack(struct liveview *lv, char id)
+{
+	send_msg(lv, M_ACK, 1, &id);
 }
