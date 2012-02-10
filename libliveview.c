@@ -181,7 +181,9 @@ int liveview_read(struct liveview *lv, struct liveview_event *ev)
 
 int liveview_send_menu_size(struct liveview *lv, unsigned char size)
 {
-	send_msg(lv, M_SETMENUSIZE, 1, size);
+	char buf[1];
+	buf[0] = size;
+	send_msg(lv, M_SETMENUSIZE, 1, buf);
 }
 
 int liveview_send_menu_settings(struct liveview *lv, uint8_t vtime, uint8_t id)
@@ -210,16 +212,28 @@ init_menu(struct liveview *lv)
 	buf[11] = 0;
 	buf[12] = 0;
 	buf[13] = 0;
-	buf[14] = 1;
+	buf[14] = 2;
 	buf[15] = 'A';
+	buf[16] = 'B';
 
-	send_msg(lv, M_GETMENUITEM_RESP, 15, buf);
-
-
-
+	send_msg(lv, M_GETMENUITEM_RESP, 16, buf);
 }
 
 int liveview_send_ack(struct liveview *lv, char id)
 {
-	send_msg(lv, M_ACK, 1, &id);
+	char buf[1];
+	buf[0] = id;
+	send_msg(lv, M_ACK, 1, buf);
+}
+
+int liveview_send_time(struct liveview *lv, uint32_t time, uint8_t h24)
+{
+	char buf[5];
+	buf[0] = (time >> 24) & 0xFF;
+	buf[1] = (time >> 16) & 0xFF;
+	buf[2] = (time >> 8) & 0xFF;
+	buf[3] = (time) & 0xFF;
+	buf[4] = !h24;
+
+	send_msg(lv, M_GETTIME_RESP, 5, buf);
 }

@@ -39,6 +39,8 @@ enum {
 	M_GETMENUITEMS = 35,
 	M_SETMENUSETTINGS = 36,
 	M_SETMENUSETTINGS_ACK = 37,
+	M_GETTIME = 38,
+	M_GETTIME_RESP = 39,
 	M_ACK = 44
 };
 
@@ -53,6 +55,8 @@ int liveview_send_ack(struct liveview *, char);
 int liveview_send_menu_size(struct liveview *, unsigned char);
 
 int liveview_send_menu_settings(struct liveview *, uint8_t, uint8_t);
+
+int liveview_send_time(struct liveview *, uint32_t, uint8_t);
 
 init_menu(struct liveview *);
 

@@ -1,5 +1,7 @@
 #include "libliveview.h"
 
+#include <time.h>
+
 void pexit(const char *str)
 {
 	perror(str ? str : "");
@@ -35,6 +37,9 @@ int main(int argc, char **argv)
 			printf(":: getmenu\n");
 			init_menu(&lv);
 /*			liveview_send_menu_item(&lv, 0, "Play", "");*/
+		} else if (lv_ev.type == M_GETTIME) {
+			printf(":: gettime\n");
+			liveview_send_time(&lv, time(NULL), 0);
 		}
 	}
 
