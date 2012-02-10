@@ -14,10 +14,6 @@ int main(int argc, char **argv)
 	struct liveview_event lv_ev;
 	struct liveview lv;
 
-	/*liveview_msg_create(3, "bsla", 3, "abc", 0xFFFF, 3, "abcd");*/
-	liveview_msg_create(3, "blsa", 3, 0xFFFF, "abc", 3, "abc");
-	pexit("");
-
 	if (liveview_init(&lv) == -1)
 		pexit("liveview_init");
 
@@ -40,11 +36,11 @@ int main(int argc, char **argv)
 			printf(":: menusizeack\n");
 		} else if (lv_ev.type == M_GETMENUITEMS) {
 			printf(":: getmenu\n");
-			init_menu(&lv);
-			/* liveview_send_menu_item(&lv, 0, "Play", "");*/
+			liveview_send_menu_item(&lv, 0, 1, 20, "Play");
+			liveview_send_menu_item(&lv, 1, 1, 40, "Fail");
 		} else if (lv_ev.type == M_GETTIME) {
 			printf(":: gettime\n");
-			liveview_send_time(&lv, time(NULL), 0);
+			liveview_send_time(&lv, time(NULL), 1);
 		}
 	}
 

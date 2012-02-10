@@ -47,6 +47,8 @@ int liveview_read(struct liveview *, struct liveview_event *);
 
 int liveview_send_ack(struct liveview *, char);
 
+int liveview_send_menu_item(struct liveview *, int, int, int, const char *);
+
 int liveview_send_menu_size(struct liveview *, unsigned char);
 
 int liveview_send_menu_settings(struct liveview *, uint8_t, uint8_t);
