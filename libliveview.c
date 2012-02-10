@@ -116,15 +116,6 @@ int liveview_connect(struct liveview *lv)
 	return lv->fd;
 }
 
-int liveview_msg_free(struct liveview_msg *msg)
-{
-	if (msg) {
-		if (msg->payload)
-			free(msg->payload);
-		free(msg);
-	}
-}
-
 int liveview_msg_read(struct liveview *lv,
 		struct liveview_msg *msg)
 {

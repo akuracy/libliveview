@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "msg.h"
+
 #define SW_VERSION "0.0.3"
 
 struct liveview {
@@ -19,13 +21,6 @@ struct liveview {
 
 struct liveview_event {
 	int type;
-};
-
-struct liveview_msg {
-	uint8_t id;
-	uint8_t header_len;
-	uint32_t payload_len;
-	char *payload;
 };
 
 enum {

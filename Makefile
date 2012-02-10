@@ -4,7 +4,7 @@ CFLAGS += -Wall -pedantic -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
 	  -Wstrict-prototypes -Wmissing-prototypes
 CC_COMPILE = $(CC) $(CFLAGS) -c
 
-OBJFILES := libliveview.h libliveview.c
+OBJFILES := libliveview.h libliveview.c msg.c msg.h
 
 all: liveview
 
@@ -12,7 +12,7 @@ liveview : $(OBJFILES)
 	ar rcs libliveview.a $(OBJFILES)
 
 test: liveview
-	gcc test.c libliveview.c ${CFLAGS}
+	gcc test.c libliveview.c msg.c ${CFLAGS}
 
 %.o: %.c
 	$(CC_COMPILE) -o $@ $<
