@@ -69,7 +69,7 @@ void fill_buf(const char *fmt, va_list val, char *buf)
 	}
 }
 
-struct liveview_msg *liveview_msg_create(uint8_t id, const char *fmt, ...)
+struct liveview_msg *msg_create(uint8_t id, const char *fmt, ...)
 {
 	struct liveview_msg *msg;
 	va_list val;
@@ -94,7 +94,7 @@ struct liveview_msg *liveview_msg_create(uint8_t id, const char *fmt, ...)
 	return msg;
 }
 
-int liveview_msg_free(struct liveview_msg *msg)
+int msg_free(struct liveview_msg *msg)
 {
 	if (msg) {
 		if (msg->payload)

@@ -1,6 +1,10 @@
 #include "libliveview.h"
 
-static void liveview_send_msg(struct liveview *lv, struct liveview_msg *msg)
+static void send_msg(struct liveview *, struct liveview_msg *);
+static int send_wrapper(struct liveview *, struct liveview_msg *);
+static sdp_session_t *register_service(void);
+
+void send_msg(struct liveview *lv, struct liveview_msg *msg)
 {
 	if (lv->fd != -1 && msg) {
 		char header[6];
@@ -17,7 +21,15 @@ static void liveview_send_msg(struct liveview *lv, struct liveview_msg *msg)
 	}
 }
 
+static int send_wrapper(struct liveview *lv, struct liveview_msg *msg)
+{
+	if (!msg)
+		return -1;
+	send_msg(lv, msg);
+	msg_free(msg);
 
+	return 0;
+}
 
 sdp_session_t *register_service()
 {
@@ -106,8 +118,6 @@ int liveview_connect(struct liveview *lv)
 	lv->fd = accept(lv->listen_fd, (struct sockaddr *)&addr, &opt);
 	sdp_close(lv->session);
 
-	send_display_properties_request(lv);
-
 	return lv->fd;
 }
 
@@ -151,7 +161,7 @@ int liveview_read(struct liveview *lv, struct liveview_event *ev)
 		return -1;
 
 	if (liveview_msg_read(lv, msg) < 0) {
-		liveview_msg_free(msg);
+		msg_free(msg);
 		return -1;
 	}
 
@@ -160,65 +170,43 @@ int liveview_read(struct liveview *lv, struct liveview_event *ev)
 
 	ev->type = msg->id;
 
-	liveview_msg_free(msg);
+	msg_free(msg);
 
 	return 0;
 }
 
-int send_display_properties_request(struct liveview *lv)
+int liveview_send_display_properties_request(struct liveview *lv)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_DISPLAY_PROPERTIES_REQUEST, "s",
-			SW_VERSION);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_DISPLAY_PROPERTIES_REQUEST, "s",
+			SW_VERSION));
 }
 
 int liveview_send_ack(struct liveview *lv, char id)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_ACK, "b", id);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_ACK, "b", id));
 }
 
 /* TODO send bitmap */
 int liveview_send_menu_item(struct liveview *lv, int id, int alert,
 		int unread, const char *text)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_GETMENUITEM_RESP, "bhhhbbhhhs", !alert, 0,
-			unread, 0, id + 3, 0, 0, 0, strlen(text), text);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_GETMENUITEM_RESP, "bhhhbbhhhs",
+				!alert, 0, unread, 0, id + 3, 0, 0, 0,
+				strlen(text), text));
 }
 
 int liveview_send_menu_settings(struct liveview *lv, uint8_t vtime, uint8_t id)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_SETMENUSETTINGS, "bbb", 12, vtime, id);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_SETMENUSETTINGS, "bbb", 12, vtime,
+				id));
 }
 
 int liveview_send_menu_size(struct liveview *lv, unsigned char size)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_SETMENUSIZE, "b", size);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_SETMENUSIZE, "b", size));
 }
 
 int liveview_send_time(struct liveview *lv, uint32_t time, uint8_t h24)
 {
-	struct liveview_msg *msg;
-
-	msg = liveview_msg_create(M_GETTIME_RESP, "lb", time, !h24);
-	liveview_send_msg(lv, msg);
-	liveview_msg_free(msg);
+	return send_wrapper(lv, msg_create(M_GETTIME_RESP, "lb", time, !h24));
 }

@@ -24,6 +24,8 @@ int main(int argc, char **argv)
 
 	printf("connected!\n");
 
+	liveview_send_display_properties_request(&lv);
+
 	while (liveview_read(&lv, &lv_ev) != -1) {
 		printf("loop\n");
 
@@ -37,7 +39,8 @@ int main(int argc, char **argv)
 		} else if (lv_ev.type == M_GETMENUITEMS) {
 			printf(":: getmenu\n");
 			liveview_send_menu_item(&lv, 0, 1, 20, "Play");
-			liveview_send_menu_item(&lv, 1, 1, 40, "Fail");
+			liveview_send_menu_item(&lv, 1, 1, 40, "Next");
+			liveview_send_menu_item(&lv, 2, 1, 40, "Prev");
 		} else if (lv_ev.type == M_GETTIME) {
 			printf(":: gettime\n");
 			liveview_send_time(&lv, time(NULL), 1);

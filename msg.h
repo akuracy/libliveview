@@ -14,7 +14,7 @@ struct liveview_msg {
 	char *payload;
 };
 
-struct liveview_msg *liveview_msg_create(uint8_t, const char *, ...);
-int liveview_msg_free(struct liveview_msg *);
+struct liveview_msg *msg_create(uint8_t, const char *, ...);
+int msg_free(struct liveview_msg *);
 
 #endif
