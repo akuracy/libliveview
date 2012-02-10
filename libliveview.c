@@ -1,23 +1,5 @@
 #include "libliveview.h"
 
-static void send_msg(struct liveview *lv, int id, uint32_t payload_length,
-		char *payload)
-{
-	char header[6];
-
-	header[0] = id;
-	header[1] = 4;
-	header[2] = (payload_length >> 24) & 0xFF;
-	header[3] = (payload_length >> 16) & 0xFF;
-	header[4] = (payload_length >> 8) & 0xFF;
-	header[5] = (payload_length) & 0xFF;
-
-	if (lv->fd != -1) {
-		write(lv->fd, header, 6);
-		write(lv->fd, payload, payload_length);
-	}
-}
-
 static void liveview_send_msg(struct liveview *lv, struct liveview_msg *msg)
 {
 	if (lv->fd != -1 && msg) {
@@ -35,11 +17,7 @@ static void liveview_send_msg(struct liveview *lv, struct liveview_msg *msg)
 	}
 }
 
-static void send_display_properties_request(struct liveview *lv)
-{
-	send_msg(lv, M_DISPLAY_PROPERTIES_REQUEST, strlen(SW_VERSION),
-			SW_VERSION);
-}
+
 
 sdp_session_t *register_service()
 {
@@ -187,6 +165,16 @@ int liveview_read(struct liveview *lv, struct liveview_event *ev)
 	return 0;
 }
 
+int send_display_properties_request(struct liveview *lv)
+{
+	struct liveview_msg *msg;
+
+	msg = liveview_msg_create(M_DISPLAY_PROPERTIES_REQUEST, "s",
+			SW_VERSION);
+	liveview_send_msg(lv, msg);
+	liveview_msg_free(msg);
+}
+
 int liveview_send_ack(struct liveview *lv, char id)
 {
 	struct liveview_msg *msg;
@@ -229,7 +217,7 @@ int liveview_send_menu_size(struct liveview *lv, unsigned char size)
 int liveview_send_time(struct liveview *lv, uint32_t time, uint8_t h24)
 {
 	struct liveview_msg *msg;
-	
+
 	msg = liveview_msg_create(M_GETTIME_RESP, "lb", time, !h24);
 	liveview_send_msg(lv, msg);
 	liveview_msg_free(msg);
