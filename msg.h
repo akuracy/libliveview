@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "img.h"
+
 struct liveview_msg {
 	uint8_t id;
 	uint8_t header_len;
@@ -15,6 +17,6 @@ struct liveview_msg {
 };
 
 struct liveview_msg *msg_create(uint8_t, const char *, ...);
-int msg_free(struct liveview_msg *);
+void msg_free(struct liveview_msg *);
 
 #endif

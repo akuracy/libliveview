@@ -1,10 +1,10 @@
 CC = cc
-CFLAGS = -O2 -lbluetooth
+CFLAGS = -O2 -lbluetooth -g
 CFLAGS += -Wall -pedantic -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
 	  -Wstrict-prototypes -Wmissing-prototypes
 CC_COMPILE = $(CC) $(CFLAGS) -c
 
-OBJFILES := libliveview.h libliveview.c msg.c msg.h
+OBJFILES := libliveview.h libliveview.c msg.c msg.h img.c img.h
 
 all: liveview
 
@@ -12,7 +12,7 @@ liveview : $(OBJFILES)
 	ar rcs libliveview.a $(OBJFILES)
 
 test: liveview
-	gcc test.c libliveview.c msg.c ${CFLAGS}
+	gcc test.c libliveview.c msg.c img.c ${CFLAGS}
 
 %.o: %.c
 	$(CC_COMPILE) -o $@ $<
