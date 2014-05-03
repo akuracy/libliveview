@@ -57,6 +57,7 @@ int main(int argc, char **argv)
 {
 	struct liveview_event lv_ev;
 	struct liveview lv;
+	struct liveview_img *img;
 
 	printf("loading images...\n");
 	img_heart       = img_read("weather.png");
