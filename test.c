@@ -13,6 +13,7 @@ int main(int argc, char **argv)
 {
 	struct liveview_event lv_ev;
 	struct liveview lv;
+	struct liveview_img *img;
 
 	if (liveview_init(&lv) == -1)
 		pexit("liveview_init");
@@ -38,9 +39,11 @@ int main(int argc, char **argv)
 			printf(":: menusizeack\n");
 		} else if (lv_ev.type == M_GETMENUITEMS) {
 			printf(":: getmenu\n");
-			liveview_send_menu_item(&lv, 0, 1, 20, "Play");
-			liveview_send_menu_item(&lv, 1, 1, 40, "Next");
-			liveview_send_menu_item(&lv, 2, 1, 40, "Prev");
+			img = img_read("menu_music.png");
+			liveview_send_menu_item(&lv, 0, 1, 20, "Play", img);
+			liveview_send_menu_item(&lv, 1, 1, 40, "Next", NULL);
+			liveview_send_menu_item(&lv, 2, 1, 40, "Prev", NULL);
+			img_free(img);
 		} else if (lv_ev.type == M_GETTIME) {
 			printf(":: gettime\n");
 			liveview_send_time(&lv, time(NULL), 1);
