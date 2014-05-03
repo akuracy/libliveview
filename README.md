@@ -24,3 +24,42 @@ int liveview_send_panel(struct liveview *, const char *, const char *, struct li
 
 Still missing:
   - set led color
+
+
+How to launch
+------
+
+To compile test:
+```bash
+make test
+```
+
+To pair with LiveView, assuming bluez v5:
+```bash
+[host]> hciconfig hci0 up
+
+[host]> bluetoothctl
+[NEW] Controller 00:02:72:04:F4:19 host [default]
+[NEW] Device B8:F9:34:E8:43:D2 LiveView
+[bluetooth]# agent on
+Agent registered
+[bluetooth]# scan on
+Discovery started       
+[CHG] Controller 00:02:72:04:F4:19 Discovering: yes
+[NEW] Device B8:F9:34:E8:43:D2 LiveView
+[bluetooth]# pair B8:F9:34:E8:43:D2
+Attempting to pair with B8:F9:34:E8:43:D2
+Request PIN code        
+[agent] Enter PIN code: 0000
+[CHG] Device B8:F9:34:E8:43:D2 UUIDs has unsupported type
+[CHG] Device B8:F9:34:E8:43:D2 Paired: yes
+Pairing successful      
+[bluetooth]# 
+```
+
+For more informations see http://wiki.archlinux.fr/Bluetooth
+
+To avoid problem with LiveView bluetooth disconnection:
+```bash
+while [ 1 ]; do ./a.out ; done
+```
