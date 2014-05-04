@@ -29,9 +29,9 @@ Still missing:
 How to launch
 ------
 
-To compile test:
+To compile demo:
 ```bash
-make test
+make demo
 ```
 
 To pair with LiveView, assuming bluez v5:
@@ -58,6 +58,16 @@ Pairing successful
 ```
 
 For more informations see http://wiki.archlinux.fr/Bluetooth
+
+To run demo:
+```bash
+make run
+```
+
+To run demo, in infinite loop (to avoid disconnection, see below):
+```bash
+make run_loop
+```
 
 To avoid problem with LiveView bluetooth disconnection:
 ```bash
