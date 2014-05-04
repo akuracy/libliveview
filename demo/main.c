@@ -1,3 +1,5 @@
+#define UNUSED(x) (void)(x)
+
 #include "libliveview.h"
 
 #include <stdarg.h>
@@ -5,6 +7,7 @@
 #include <signal.h>
 
 void pexit(const char *);
+void free_images(void);
 void sighandler(int);
 
 struct liveview_img *img_heart;
@@ -42,6 +45,8 @@ void free_images(void)
 
 void sighandler(int signum)
 {
+	UNUSED(signum);
+
 	free_images();
 	exit(EXIT_FAILURE);
 }
@@ -57,13 +62,15 @@ int main(int argc, char **argv)
 {
 	struct liveview_event lv_ev;
 	struct liveview lv;
-	struct liveview_img *img;
+	
+	UNUSED(argc);
+	UNUSED(argv);
 
 	printf("loading images...\n");
 	img_heart       = img_read("weather.png");
 	img_alert       = img_read("menu_gmail.png");
-	img_lamp        = img_read("menu_lamp.png");		// http://icones.pro/ampoule-3-image-png.html
-	img_lamp_active = img_read("menu_lamp_active.png");	// http://icones.pro/ampoule-jaune-image-png.html
+	img_lamp        = img_read("menu_lamp.png");		/* http://icones.pro/ampoule-3-image-png.html		*/
+	img_lamp_active = img_read("menu_lamp_active.png");	/* http://icones.pro/ampoule-jaune-image-png.html	*/
 	img_heat        = img_read("menu_heat.png");
 	img_heat_active = img_read("menu_heat_active.png");
 
@@ -104,7 +111,7 @@ int main(int argc, char **argv)
 			liveview_send_menu_item(&lv, menu_alert_id, 1, alert_count, "Alertes", img_alert);
 			liveview_send_menu_item(&lv, menu_lamp_id, 0, 0, lamp_active ? "Lampe ON" : "Lampe OFF", lamp_active ? img_lamp_active : img_lamp);
 			liveview_send_menu_item(&lv, menu_heat_id, 0, 0, heat_active ? "Chauffage ON" : "Chauffage OFF", heat_active ? img_heat_active : img_heat);
-			//liveview_send_vibrate(&lv, 0, 100);
+			/* liveview_send_vibrate(&lv, 0, 100); */
 
 		} else if (lv_ev.type == M_GETTIME) {
 			liveview_send_time(&lv, time(NULL) + 3600 * 2, 1);
@@ -122,11 +129,11 @@ int main(int argc, char **argv)
 					if (current_alert == alert_count) {
 						current_alert--;
 					}
-					//liveview_send_navigation(&lv, RESULT_OK);
+					/* liveview_send_navigation(&lv, RESULT_OK); */
 					liveview_send_navigation(&lv, RESULT_CANCEL);
 					liveview_send_alert(&lv, current_alert, alert_count, unread_alert_count, "date2", "header2", "body2", img_alert);
 					if (alert_count == 0) {
-						//liveview_send_navigation(&lv, RESULT_EXIT);
+						/* liveview_send_navigation(&lv, RESULT_EXIT); */
 						liveview_send_navigation(&lv, RESULT_CANCEL);
 						liveview_send_menu_settings(&lv, 100, menu_alert_id);
 						liveview_send_menu_size(&lv, 3);
@@ -156,15 +163,12 @@ int main(int argc, char **argv)
 	
 						if (lv_ev.menu_item_id == menu_lamp_id) {
 							lamp_active = !lamp_active;
-							//send_menu(&lv);
-							//liveview_send_navigation(&lv, RESULT_EXIT);
 							liveview_send_navigation(&lv, RESULT_CANCEL);
-							//liveview_send_panel(&lv, "Etat lampe", "ON", lamp_active ? img_lamp_active : img_lamp, 0);
+							/* liveview_send_panel(&lv, "Etat lampe", "ON", lamp_active ? img_lamp_active : img_lamp, 0); */
 							liveview_send_menu_settings(&lv, 100, menu_lamp_id);
 							liveview_send_menu_size(&lv, 3);
 
 						} else if (lv_ev.menu_item_id == menu_heat_id) {
-							//alert_count++;
 							liveview_send_navigation(&lv, RESULT_OK);
 							liveview_send_panel(&lv, "Chauffage", "AUTO", heat_active ? img_heat_active : img_heat, 0);
 							liveview_send_image(&lv, 36, 36, img_alert);
@@ -173,11 +177,11 @@ int main(int argc, char **argv)
 						} else {
 							liveview_send_navigation(&lv, RESULT_CANCEL);
 						}
-						//liveview_send_navigation(&lv, RESULT_OK);
-						//liveview_send_vibrate(&lv, 0, 1000);
-						//liveview_send_clear(&lv);
-						//liveview_send_text(&lv, "Coucou");
-						//liveview_send_image(&lv, 7, 7, img4);
+
+						/* liveview_send_vibrate(&lv, 0, 1000); */
+						/* liveview_send_clear(&lv); */
+						/* liveview_send_text(&lv, "Coucou"); */
+						/* liveview_send_image(&lv, 7, 7, img_heart); */
 	
 					} else {
 						liveview_send_navigation(&lv, RESULT_CANCEL);

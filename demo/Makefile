@@ -7,7 +7,7 @@ CC_COMPILE = $(CC) $(CFLAGS) -c
 
 all: demo 
 
-demo: test.c
+demo: main.c
 	$(CC) $^ ${CFLAGS} -lliveview
 
 clean:
