@@ -64,7 +64,11 @@ enum {
 	M_SETLED_ACK = 41,
 	M_SETVIBRATE = 42,
 	M_SETVIBRATE_ACK = 43,
-	M_ACK = 44
+	M_ACK = 44,
+	M_SETSCREENMODE = 64,
+	M_SETSCREENMODE_ACK = 65,
+	M_GETSCREENMODE = 66,
+	M_GETSCREENMODE_RESP = 67
 };
 
 enum {
@@ -118,5 +122,6 @@ int liveview_send_image(struct liveview *, int, int, struct liveview_img *);
 int liveview_send_clear(struct liveview *);
 int liveview_send_alert(struct liveview *, int, int, int, const char *, const char *, const char *, struct liveview_img *);
 int liveview_send_panel(struct liveview *, const char *, const char *, struct liveview_img *, uint8_t);
+int liveview_send_screenmode(struct liveview *, uint8_t, uint8_t);
 
 #endif

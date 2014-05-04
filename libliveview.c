@@ -252,7 +252,7 @@ int liveview_send_menu_item(struct liveview *lv, int id, int alert,
 
 int liveview_send_menu_settings(struct liveview *lv, uint8_t vtime, uint8_t id)
 {
-	return send_wrapper(lv, msg_create(M_SETMENUSETTINGS, "bbb", 12, vtime,
+	return send_wrapper(lv, msg_create(M_SETMENUSETTINGS, "bbb", vtime, 12, 
 				id));
 }
 
@@ -319,4 +319,14 @@ int liveview_send_panel(struct liveview *lv, const char *header, const char *foo
 	/* img_free(img); // done by img_create() caller */
 
 	return send_wrapper(lv, msg);
+}
+
+int liveview_send_screenmode(struct liveview *lv, uint8_t brightness, uint8_t automatic)
+{
+	brightness = brightness << 1;
+	if (automatic) {
+		brightness |= 1;
+	}
+	
+	return send_wrapper(lv, msg_create(M_SETSCREENMODE, "b", brightness));
 }
