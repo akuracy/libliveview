@@ -4,6 +4,11 @@ static void send_msg(struct liveview *, struct liveview_msg *);
 static int send_wrapper(struct liveview *, struct liveview_msg *);
 static sdp_session_t *register_service(void);
 
+/* "private" functions, not to be declared in libliveview.h */
+void debug_msg(struct liveview_msg *);
+int liveview_msg_read(struct liveview *, struct liveview_msg *);
+int liveview_fill_event(struct liveview_event *, struct liveview_msg *);
+
 void send_msg(struct liveview *lv, struct liveview_msg *msg)
 {
 	if (lv->fd != -1 && msg) {
@@ -124,8 +129,7 @@ int liveview_connect(struct liveview *lv)
 	return lv->fd;
 }
 
-int liveview_msg_read(struct liveview *lv,
-		struct liveview_msg *msg)
+int liveview_msg_read(struct liveview *lv, struct liveview_msg *msg)
 {
 	uint32_t payload_read = 0;
 	char buf[4];
@@ -158,10 +162,10 @@ int liveview_msg_read(struct liveview *lv,
 
 void debug_msg(struct liveview_msg *msg)
 {
-	int i;
+	uint32_t i;
 	printf("id: %i, header: %i, payload: %i\n", msg->id, msg->header_len, msg->payload_len);
 	for (i = 0; i < msg->payload_len; i++) {
-		printf("[%d] 0x%02.2X\n", i, *(msg->payload + i));
+		printf("[%d] 0x%2.2X\n", i, *(msg->payload + i));
 	}
 }
 
@@ -172,18 +176,18 @@ int liveview_fill_event(struct liveview_event *ev, struct liveview_msg *msg)
 	if (ev->type == M_GETALERT) {
 		ev->menu_item_id = msg->payload[0];
 		ev->alert_action = msg->payload[1];
-		//ev->max_body_size = msg->payload[2];
+		/* ev->max_body_size = msg->payload[2]; // TODO: ?? */
 		debug_msg(msg);
 	} else if (ev->type == M_NAVIGATION) {
-		/* msg->payload[0]; /* should be 0 */
-		/* msg->payload[1]; /* should be 3 */
+		/* msg->payload[0]; // should be 0 */
+		/* msg->payload[1]; // should be 3 */
 		navigation = msg->payload[2];
 		ev->menu_item_id = msg->payload[3];
 		ev->menu_id = msg->payload[4];
 		ev->in_alert = ev->menu_id == 20;
 
 		if (navigation != 32 && ((navigation < 1) || (navigation > 15))) {
-			// out of range
+			/* out of range */
 		} else {
 			if (navigation == 32) {
 				ev->nav_action = NAVACTION_PRESS;
@@ -241,7 +245,7 @@ int liveview_send_menu_item(struct liveview *lv, int id, int alert,
 	msg = msg_create(M_GETMENUITEM_RESP, "bhhhbbhhhsi",
 				!alert, 0, unread, 0, id + 3, 0, 0, 0,
 				strlen(text), text, img);
-	//img_free(img);
+	/* img_free(img); // done by img_create() caller */
 
 	return send_wrapper(lv, msg);
 }
@@ -287,7 +291,7 @@ int liveview_send_image(struct liveview *lv, int x, int y, struct liveview_img *
 	struct liveview_msg *msg;
 
 	msg = msg_create(M_DISPLAYBITMAP, "bbbi", x, y, 1, img);
-	//img_free(img);
+	/* img_free(img); // done by img_create() caller */
 
 	return send_wrapper(lv, msg);
 }
@@ -302,7 +306,7 @@ int liveview_send_alert(struct liveview *lv, int alert_index, int total_count, i
 	struct liveview_msg *msg;
 
 	msg = msg_create(M_GETALERT_RESP, "bhhhbbhshshsbbbhi", 0, total_count, unread_count, alert_index, 0, 0, strlen(timestamp), timestamp, strlen(header), header, strlen(body), body, 0, 0, 0, img->length, img);
-	//img_free(img);
+	/* img_free(img); // done by img_create() caller */
 
 	return send_wrapper(lv, msg);
 }
@@ -312,7 +316,7 @@ int liveview_send_panel(struct liveview *lv, const char *header, const char *foo
 	struct liveview_msg *msg;
 
 	msg = msg_create(M_DISPLAYPANEL, "bhhhbbhshshsi", 0, 0, 0, 0, alert_user ? 80 : 81, 0, strlen(header), header, 0, "", strlen(footer), footer, img);
-	//img_free(img);
+	/* img_free(img); // done by img_create() caller */
 
 	return send_wrapper(lv, msg);
 }

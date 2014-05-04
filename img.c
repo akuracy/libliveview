@@ -1,5 +1,7 @@
 #include "img.h"
 
+void pexit(const char *);
+
 struct liveview_img *img_read(const char *filename)
 {
 	struct liveview_img *img;
@@ -19,8 +21,6 @@ struct liveview_img *img_read(const char *filename)
 	if (!(img->content = calloc(img->length, 1)))
 		pexit("");
 	fread(img->content, 1, img->length, file);
-
-	//printf("img length = %d\n", img->length);
 
 	return img;
 }

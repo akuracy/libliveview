@@ -3,6 +3,8 @@
 static uint32_t calculate_size(const char *, va_list);
 static void fill_buf(const char *, va_list, char *);
 
+void pexit(const char *);
+
 uint32_t calculate_size(const char *fmt, va_list val)
 {
        uint32_t size = 0;
