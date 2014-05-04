@@ -93,7 +93,7 @@ int liveview_init(struct liveview *lv)
 {
 	struct sockaddr_rc addr;
 
-	if (/*lv->listen_fd == -1 && */(lv->listen_fd = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM)) < 0) {
+	if ((lv->listen_fd = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM)) < 0) {
 		return -1;
 	}
 
@@ -101,14 +101,12 @@ int liveview_init(struct liveview *lv)
 	addr.rc_bdaddr = *BDADDR_ANY;
 	addr.rc_channel = 1;
 
-	if (/*lv->listen_fd == -1 && */bind(lv->listen_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+	if (bind(lv->listen_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		close(lv->fd);
 		return -1;
 	}
 
-	if (/*lv->listen_fd == -1 && */listen(lv->listen_fd, 1) < 0) {
-		//return -1;
-	}
+	listen(lv->listen_fd, 1);
 
 	lv->session = register_service();
 

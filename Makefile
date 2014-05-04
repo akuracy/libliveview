@@ -4,20 +4,32 @@ CFLAGS += -Wall -pedantic -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
 	  -Wstrict-prototypes -Wmissing-prototypes
 CC_COMPILE = $(CC) $(CFLAGS) -c
 
-OBJFILES := libliveview.h libliveview.c msg.c msg.h img.c img.h
+OBJFILES := libliveview.o libliveview.o msg.o img.o
 
 all: liveview
 
-liveview : $(OBJFILES)
-	ar rcs libliveview.a $(OBJFILES)
+.PHONY: liveview
 
-test: liveview
-	gcc test.c libliveview.c msg.c img.c ${CFLAGS}
+liveview : $(OBJFILES)
+	$(AR) rcs libliveview.a $(OBJFILES)
+
+.PHONY: demo
+demo: liveview
+	$(MAKE) -C demo
+
+.PHONY: run
+run: demo
+	cd demo ; ./a.out
+
+.PHONY: run_loop
+run_loop: demo
+	cd demo ; while [ 1 ]; do ./a.out; done
 
 %.o: %.c
 	$(CC_COMPILE) -o $@ $<
 
 clean:
+	$(MAKE) -C demo clean
 	@echo cleaning directory
 	@rm -f *.o *.a a.out
 
